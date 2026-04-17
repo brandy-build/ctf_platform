@@ -1,250 +1,121 @@
-# JARVIS CTF Platform
+## JARVIS CTF Platform
 
-A futuristic, Iron Man-inspired Capture The Flag (CTF) training platform with 10 challenges across 5 categories.
+A browser-based Capture The Flag training platform with a dark cyber-security theme, fixed challenge categories, a progress dashboard, and client-side flag validation.
 
-## 🚀 Quick Start
+## Overview
 
-1. Open `index.html` in your web browser
-2. Browse through the challenge categories
-3. Click on any challenge to view details
-3. Submit the flag format: `SAUR{flag_content}`
-5. Earn points and track your progress
+This project is a static frontend challenge platform. All challenge data, rendering logic, and progress tracking live in the browser. Completion state is stored in `localStorage`, so progress persists across reloads on the same device and browser.
 
-## 📋 Challenge Categories & Flags
+## Architecture
 
-### 1. 🌐 Web Exploitation (2 Flags - 300 Points)
+```mermaid
+flowchart TB
+    U[User] --> I[index.html]
+    U --> P[progress.html]
 
-#### Easy: SQL Injection 101 (100 pts)
-**Flag:** `SAUR{sql_injection_bypassed}`
-- **Challenge:** Find the SQL injection vulnerability in the login form
-- **Hint:** Try entering `admin' OR '1'='1` in the username field
+    I --> S[script.js]
+    I --> C[styles.css]
+    P --> C
 
-#### Hard: XSS & CSRF Exploitation (200 pts)
-**Flag:** `SAUR{xss_csrf_master}`
-- **Challenge:** Exploit both XSS and CSRF vulnerabilities
-- **Hint:** Craft a malicious payload that steals session cookies
+    S --> D[Challenge data]
+    S --> M[Modal challenge window]
+    S --> T[Countdown dial]
+    S --> L[localStorage: ctfProgress]
 
----
+    P --> L
+    P --> R[Progress dashboard]
 
-### 2. 🔐 Cryptography (2 Flags - 300 Points)
+    D --> V[5 categories]
+    D --> X[10 challenges]
+    L --> Q[Completed flags]
+    L --> N[Total score]
+```
 
-#### Easy: Caesar Cipher Decryption (100 pts)
-**Flag:** `SAUR{the_quick_brown_fox}`
-- **Challenge:** Decrypt "Wkh txlfn eurzq ira mxpsv ryhu wkh odcb grj"
-- **Hint:** Use a shift of 3 (ROT3)
+## Project Structure
 
-#### Hard: RSA Private Key Recovery (200 pts)
-**Flag:** `SAUR{rsa_private_key_exposed}`
-- **Challenge:** Given RSA public parameters, determine the private key
-- **Parameters:** n=6537424611447, e=65537
-- **Hint:** Factor the modulus to find p and q, then calculate d
+| File | Purpose |
+| --- | --- |
+| [index.html](index.html) | Main challenge landing page with categories, modal challenge window, and countdown dial |
+| [progress.html](progress.html) | Dedicated progress dashboard with summary cards and category completion bars |
+| [script.js](script.js) | Challenge definitions, rendering logic, flag submission, countdown updates, and storage handling |
+| [styles.css](styles.css) | Shared UI styling for both pages |
+| [FLAGS.md](FLAGS.md) | Flag reference used by the platform |
 
----
+## Features
 
-### 3. ⚙️ Binary Exploitation (2 Flags - 300 Points)
+- 5 challenge categories with 10 total challenges
+- Client-side flag submission and completion tracking
+- Dedicated progress dashboard
+- Persistent progress using browser `localStorage`
+- Countdown dial that shows remaining contest time
+- Dark, pointed cyberpunk-style interface
 
-#### Easy: Buffer Overflow Basics (100 pts)
-**Flag:** `SAUR{buffer_overflow_success}`
-- **Challenge:** Overflow a fixed-size buffer to jump to a hidden function
-- **Hint:** Pattern: AAAA...AAAA + return address
+## How To Run
 
-#### Hard: ROP Chain Exploitation (200 pts)
-**Flag:** `SAUR{rop_chain_master}`
-- **Challenge:** Construct a ROP chain to bypass ASLR protections
-- **Hint:** Find gadgets in libc: pop rdi; ret; syscall
+This app does not need a build step, package manager, or backend.
 
----
+### Option 1: Open directly
 
-### 4. 🔍 Forensics (2 Flags - 300 Points)
+1. Open [index.html](index.html) in a browser.
+2. Select a challenge category.
+3. Click a challenge tile to open the overlay window.
+4. Submit the flag in the required format: `SAUR{...}`.
+5. Open the progress page from the navbar to review completion.
 
-#### Easy: Metadata Extraction (100 pts)
-**Flag:** `SAUR{metadata_revealed}`
-- **Challenge:** Extract hidden metadata from an image
-- **Tool:** exiftool
-- **Hint:** Check GPS coordinates and timestamps
+### Option 2: Use a local static server
 
-#### Hard: Disk Image Recovery (200 pts)
-**Flag:** `SAUR{deleted_files_recovered}`
-- **Challenge:** Recover deleted files from a disk image
-- **Tools:** photorec, sleuthkit
-- **Hint:** Search unallocated space for file fragments
+If you prefer serving the files locally:
 
----
+```bash
+python -m http.server 8000
+```
 
-### 5. 🕵️ OSINT (2 Flags - 300 Points)
+Then open:
 
-#### Easy: WHOIS & DNS Reconnaissance (100 pts)
-**Flag:** `SAUR{osint_domain_enum}`
-- **Challenge:** Perform WHOIS and DNS lookups on a domain
-- **Commands:**
-  ```bash
-  whois domain.com
-  nslookup -type=MX domain.com
-  dig domain.com ANY
-  ```
-- **Hint:** Check registrant contact details
+```text
+http://localhost:8000/
+```
 
-#### Hard: Social Engineering & OSINT (200 pts)
-**Flag:** `SAUR{osint_social_engineer}`
-- **Challenge:** Gather intelligence from public sources
-- **Sources:** GitHub, LinkedIn, social media, company websites
-- **Hint:** Piece together information from multiple sources
+You can also use any static server, such as `npx serve`, VS Code Live Server, or a simple IIS/Apache/Nginx setup.
 
----
+## Progress Data
 
-## 🎮 Features
+The platform stores progress in browser storage under the `ctfProgress` key.
 
-- **Dynamic Challenge System:** 5 categories with 2 challenges each
-- **Real-time Progress Tracking:** Visual progress bars for each category
-- **Score System:** Earn points for each flag (Easy: 100pts, Hard: 200pts)
-- **Persistent Storage:** Your progress is saved in browser localStorage
-- **Futuristic UI:** Iron Man-inspired design with neon colors
-- **Responsive Design:** Works on desktop and mobile devices
-- **Smooth Animations:** Engaging visual effects and transitions
+Saved data includes:
 
-## 🎨 Design Highlights
-
-- **Color Scheme:** Neon cyan (#00d4ff), Orange (#ff6b00), Acid Green (#00ff41)
-- **Dark Theme:** Professional dark background (#0a0e27)
-- **Glass Morphism:** Frosted glass effects with backdrop blur
-- **Grid Animation:** Moving background grid pattern
-- **Holographic Text:** Gradient-animated titles
-- **Scanner Effects:** Animated scanning lines
-
-## 💾 Local Storage
-
-Your progress is automatically saved in your browser's localStorage:
-- Completed challenges
+- Completed challenge IDs
 - Total score
-- Category progress
 
-To reset progress: Open browser console and run:
+To reset progress, open the browser console and run:
+
 ```javascript
 localStorage.removeItem('ctfProgress');
+location.reload();
 ```
 
-## 📱 Browser Compatibility
+## Challenge Format
 
-- Chrome/Chromium (Latest)
-- Firefox (Latest)
-- Safari (Latest)
-- Edge (Latest)
+- Easy challenges are worth 100 points.
+- Hard challenges are worth 200 points.
+- The correct submission format is `SAUR{flag_value}`.
 
-## 🔧 Customization
+## Notes
 
-### Add New Challenges
+- The app is fully client-side, so the flags are visible in the source code.
+- This makes it suitable for training, demonstrations, and lightweight CTF hosting.
+- Because the app is static, deploy it anywhere that can serve HTML, CSS, and JavaScript files.
 
-Edit `script.js` and add to the `challenges` object:
+## Browser Support
 
-```javascript
-'Category Name': {
-    icon: '🎯',
-    color: '#color-code',
-    challenges: [
-        {
-            id: 'unique_id',
-            title: 'Challenge Title',
-            difficulty: 'easy', // or 'hard'
-            points: 100,
-            description: 'Challenge description',
-            flag: 'CTF{flag_content}',
-            category: 'Category Name'
-        }
-    ]
-}
-```
+- Chrome or Chromium-based browsers
+- Firefox
+- Edge
+- Safari
 
-### Modify Colors
+## License
 
-Update CSS variables in `styles.css`:
-
-```css
-:root {
-    --primary-color: #00d4ff;
-    --secondary-color: #ff6b00;
-    --accent-color: #00ff41;
-    /* ... more variables ... */
-}
-```
-
-## 📊 Total Possible Points
-
-| Category | Easy | Hard | Total |
-|----------|------|------|-------|
-| Web Exploitation | 100 | 200 | 300 |
-| Cryptography | 100 | 200 | 300 |
-| Binary Exploitation | 100 | 200 | 300 |
-| Forensics | 100 | 200 | 300 |
-| OSINT | 100 | 200 | 300 |
-| **TOTAL** | **500** | **1000** | **1500** |
-
-## 🎯 Difficulty Levels
-
-- **Easy (100 pts):** Beginner-friendly challenges with clear hints
-- **Hard (200 pts):** Advanced challenges requiring deeper knowledge and skills
-
-## 📝 Tips for Solving Challenges
-
-1. **Read carefully:** Each challenge description contains important clues
-2. **Use online tools:** Many challenges require web-based or command-line tools
-3. **Research:** Google specific techniques for each category
-4. **Think outside the box:** Some solutions may be unconventional
-5. **Document your process:** Keep notes on how you solved each challenge
-
-## 🏆 Achievement System
-
-Track your progress:
-- 0-3 flags: Beginner
-- 4-7 flags: Intermediate
-- 8-10 flags: Master Hacker
-
-## ❓ Troubleshooting
-
-### Flags not submitting?
-- Ensure you're using the correct format: `CTF{content}`
-- Check capitalization (submission is case-insensitive)
-- Clear browser cache and reload
-
-### Progress not saving?
-- Check if localStorage is enabled
-- Try clearing browser cache
-- Open DevTools console to verify storage
-
-## 📚 Learning Resources
-
-### Web Exploitation
-- OWASP Top 10
-- PortSwigger Web Security Academy
-- HackTheBox Web challenges
-
-### Cryptography
-- CryptoPals Challenges
-- Brilliant.org Cryptography Course
-- CyberDefenders
-
-### Binary Exploitation
-- LiveOverflow Binary Hacking
-- PicoCTF Binary Exploitation
-- Exploit.education
-
-### Forensics
-- Digital Forensics & Incident Response (DFIR)
-- Forensic Focus
-- CyberDefenders Forensics
-
-### OSINT
-- Bellingcat's Online Investigation Toolkit
-- OSINT Framework
-- Google Dorking guides
-
-## 🔒 Security Note
-
-This is a **training platform** for educational purposes. Do not use these techniques on systems you don't own or have permission to test.
-
-## 📄 License
-
-This CTF platform is provided as-is for educational purposes.
-
+This project is provided for educational use.
 ---
 
 **Enjoy hacking! 🚀⚡**
