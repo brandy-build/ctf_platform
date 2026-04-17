@@ -174,7 +174,7 @@ function updateClock() {
     }
 }
 
-// Right-side time dial (elapsed time since contest start at 10:00 AM)
+// Right-side time dial (8-hour contest countdown)
 function updateCountdownDial() {
     const dial = document.getElementById('countdownDial');
     const valueEl = document.getElementById('countdownValue');
@@ -184,16 +184,17 @@ function updateCountdownDial() {
     const now = new Date();
     const start = new Date(now);
     start.setHours(10, 0, 0, 0);
+    const contestDurationSeconds = 8 * 60 * 60;
 
-    // If current time is before today's start, show zero elapsed.
     const elapsedSeconds = now < start ? 0 : Math.floor((now - start) / 1000);
+    const remainingSeconds = Math.max(0, contestDurationSeconds - elapsedSeconds);
 
-    const hours = String(Math.floor(elapsedSeconds / 3600)).padStart(2, '0');
-    const minutes = String(Math.floor((elapsedSeconds % 3600) / 60)).padStart(2, '0');
-    const seconds = String(elapsedSeconds % 60).padStart(2, '0');
+    const hours = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+    const seconds = String(remainingSeconds % 60).padStart(2, '0');
 
     valueEl.textContent = `${hours}:${minutes}:${seconds}`;
-    labelEl.textContent = 'Time Elapsed';
+    labelEl.textContent = 'Time Remaining';
 }
 
 // Render Category Cards - Compact Tile Layout

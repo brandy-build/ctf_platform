@@ -69,6 +69,7 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     padding: 1.5rem 2rem;
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -107,9 +108,14 @@ body {
 .nav-stats {
     display: flex;
     gap: 2rem;
+    margin-right: 14rem;
 }
 
 .progress-page-btn {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
     background: linear-gradient(135deg, #00b8e6, #0092b8);
     border: 1px solid rgba(0, 212, 255, 0.5);
     color: #e8f8ff;
@@ -125,7 +131,7 @@ body {
 }
 
 .progress-page-btn:hover {
-    transform: translateY(-1px);
+    transform: translateY(-50%);
     filter: brightness(1.08);
 }
 
@@ -917,6 +923,17 @@ body {
     .nav-container {
         flex-wrap: wrap;
         gap: 0.8rem;
+        padding-right: 2rem;
+    }
+
+    .nav-stats {
+        margin-right: 0;
+    }
+
+    .progress-page-btn {
+        position: static;
+        transform: none;
+        margin-top: 0.75rem;
     }
 
     .stat-value {
