@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS CTF Platform - Challenge Progress</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="particle-background"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-bolt"></i></span>
+                <span class="logo-text">JARVIS</span>
+                <span class="logo-subtitle">Progress Console</span>
+            </div>
+            <div class="nav-stats">
+                <div class="stat-box">
+                    <span class="stat-label">Flags Captured:</span>
+                    <span class="stat-value" id="flagCount">0/10</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Score:</span>
+                    <span class="stat-value" id="scoreCount">0</span>
+                </div>
+            </div>
+            <button class="progress-page-btn" onclick="window.location.href='index.html'">Back To Challenges</button>
+        </div>
+    </nav>
+
+    <div class="container progress-page-layout">
+        <section class="header-section progress-hero">
+            <div class="holographic-text">
+                <h1 class="title">CHALLENGE PROGRESS</h1>
+                <p class="subtitle">Track completion, score, and category status in one place</p>
+            </div>
+        </section>
+
+        <section class="progress-summary">
+            <div class="summary-grid" id="summaryGrid"></div>
+            <div class="overall-progress-card">
+                <div class="progress-title">Overall Completion</div>
+                <div class="progress-bar-container overall-progress-bar">
+                    <div class="progress-bar-fill" id="overallProgressFill" style="width: 0%">0%</div>
+                </div>
+                <div class="progress-percentage" id="overallProgressText">0 of 10 challenges completed</div>
+            </div>
+        </section>
+
+        <section class="leaderboard-section">
+            <h2 class="section-title">Category Completion</h2>
+            <div class="progress-container" id="progressContainer"></div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>JARVIS CTF Platform v1.0 | Progress Dashboard</p>
+        <div class="footer-accent"></div>
+    </footer>
+
+    <script>
+        const categories = {
+            'Web Exploitation': ['web_easy', 'web_hard'],
+            'Cryptography': ['crypto_easy', 'crypto_hard'],
+            'Binary': ['binary_easy', 'binary_hard'],
+            'Forensics': ['forensics_easy', 'forensics_hard'],
+            'OSINT': ['osint_easy', 'osint_hard']
+        };
+
+        function loadProgress() {
+            const data = localStorage.getItem('ctfProgress');
+            const parsed = data ? JSON.parse(data) : { completedChallenges: [], totalScore: 0 };
+            const completed = new Set(parsed.completedChallenges || []);
+            const totalScore = parsed.totalScore || 0;
+            const totalChallenges = 10;
+            const completedCount = completed.size;
+            const remainingCount = Math.max(0, totalChallenges - completedCount);
+            const completionPercent = Math.round((completedCount / totalChallenges) * 100);
+
+            document.getElementById('flagCount').textContent = `${completed.size}/10`;
+            document.getElementById('scoreCount').textContent = totalScore;
+
+            const summaryGrid = document.getElementById('summaryGrid');
+            summaryGrid.innerHTML = `
+                <div class="summary-card">
+                    <div class="summary-label">Completed</div>
+                    <div class="summary-value">${completedCount}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Remaining</div>
+                    <div class="summary-value">${remainingCount}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Score</div>
+                    <div class="summary-value">${totalScore}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Progress</div>
+                    <div class="summary-value">${completionPercent}%</div>
+                </div>
+            `;
+
+            document.getElementById('overallProgressFill').style.width = `${completionPercent}%`;
+            document.getElementById('overallProgressFill').textContent = `${completionPercent}%`;
+            document.getElementById('overallProgressText').textContent = `${completedCount} of ${totalChallenges} challenges completed`;
+
+            const container = document.getElementById('progressContainer');
+            container.innerHTML = '';
+
+            Object.entries(categories).forEach(([category, ids]) => {
+                const done = ids.filter(id => completed.has(id)).length;
+                const total = ids.length;
+                const percentage = Math.round((done / total) * 100);
+
+                const item = document.createElement('div');
+                item.className = 'category-progress';
+                item.innerHTML = `
+                    <div class="category-progress-header">
+                        <div class="progress-title">${category}</div>
+                        <div class="category-progress-meta">${done}/${total}</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${percentage}%">${done}/${total}</div>
+                    </div>
+                    <div class="progress-percentage">${percentage}% Complete</div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProgress);
+    </script>
+</body>
+</html>

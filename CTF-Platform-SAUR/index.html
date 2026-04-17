@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS CTF Platform - Advanced Security Training</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="particle-background"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-bolt"></i></span>
+                <span class="logo-text">JARVIS</span>
+                <span class="logo-subtitle">CTF Protocol</span>
+            </div>
+            <div class="nav-stats">
+                <button class="progress-page-btn" onclick="window.location.href='progress.html'">Challenge Progress</button>
+                <div class="stat-box">
+                    <span class="stat-label">Flags Captured:</span>
+                    <span class="stat-value" id="flagCount">0/10</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Score:</span>
+                    <span class="stat-value" id="scoreCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="holographic-text">
+                <h1 class="title">ADVANCED SECURITY CHALLENGE</h1>
+                <p class="subtitle">Master the art of cybersecurity through tactical flag capture</p>
+            </div>
+            <div class="tech-animation">
+                <div class="scanner-line"></div>
+            </div>
+        </section>
+
+        <!-- Categories Grid -->
+        <section class="categories-section">
+            <h2 class="section-title">Challenge Categories</h2>
+            <div id="categoriesSections">
+                <!-- Category sections will be populated here -->
+            </div>
+        </section>
+
+        <aside class="countdown-dial" id="countdownDial" aria-label="Countdown dial">
+            <div class="countdown-inner">
+                <div class="countdown-title">Countdown</div>
+                <div class="countdown-time" id="countdownValue">00:00:00</div>
+                <div class="countdown-subtitle" id="countdownLabel">To Contest End</div>
+            </div>
+        </aside>
+
+        <!-- Challenge Overlay Window -->
+        <div class="modal" id="challengeModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+                <div class="modal-header">
+                    <div class="modal-header-content">
+                        <h2 id="modalTitle"></h2>
+                        <span class="difficulty-badge" id="difficultyBadge"></span>
+                    </div>
+                    <div class="points-value" id="pointsValue"></div>
+                </div>
+                <div class="modal-body">
+                    <div class="challenge-description" id="modalDescription"></div>
+                    <div class="challenge-resources">
+                        <div class="resources-title">Resources</div>
+                        <ul id="resourcesList"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="flag-input-container">
+                        <input type="text" id="flagInput" placeholder="Enter flag (SAUR{...})" />
+                        <button class="submit-btn" onclick="submitFlag()">Submit Flag</button>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>JARVIS CTF Platform v1.0 | Secure your skills | Advanced Training System</p>
+        <div class="footer-accent"></div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
