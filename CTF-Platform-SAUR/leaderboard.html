@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS CTF - Live Leaderboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="leaderboard-monitor-page">
+    <div class="particle-background"></div>
+
+    <main class="container leaderboard-layout">
+        <section class="leaderboard-header sharp-panel">
+            <div>
+                <p class="admin-eyebrow">ADMIN MONITOR</p>
+                <h1 class="monitor-title">Leaderboard Monitor</h1>
+                <p class="monitor-subcopy">Fast scanning, live ranking updates, and expandable team detail rows.</p>
+            </div>
+
+            <div class="leaderboard-toolbar">
+                <select id="categoryFilter" class="sharp-select">
+                    <option value="all">Category</option>
+                    <option value="Web Exploitation">Web Exploitation</option>
+                    <option value="Cryptography">Cryptography</option>
+                    <option value="Binary">Binary</option>
+                    <option value="Forensics">Forensics</option>
+                    <option value="OSINT">OSINT</option>
+                </select>
+                <select id="timeRangeFilter" class="sharp-select">
+                    <option value="all">Time Range</option>
+                    <option value="1h">Last 1 hour</option>
+                    <option value="6h">Last 6 hours</option>
+                    <option value="24h">Last 24 hours</option>
+                    <option value="7d">Last 7 days</option>
+                </select>
+                <div class="admin-search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="search" id="teamSearch" placeholder="Search by team">
+                </div>
+            </div>
+        </section>
+
+        <section class="leaderboard-top-cards" id="leaderboardTopCards"></section>
+
+        <section class="leaderboard-stats-panel sharp-panel">
+            <div class="panel-heading-row">
+                <h2>Contest Statistics</h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTeams">0</div>
+                    <div class="stat-label">Total Teams</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statAvgScore">0</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statAvgSolved">0</div>
+                    <div class="stat-label">Avg Challenges</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotalSolves">0</div>
+                    <div class="stat-label">Total Solves</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="leaderboard-charts-panel">
+            <div class="charts-row">
+                <article class="chart-panel sharp-panel">
+                    <div class="panel-heading-row">
+                        <h3>Score Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="scoreDistributionChart" height="250"></canvas>
+                    </div>
+                </article>
+                <article class="chart-panel sharp-panel">
+                    <div class="panel-heading-row">
+                        <h3>Solve Rate by Category</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="categoryChart" height="250"></canvas>
+                    </div>
+                </article>
+            </div>
+            <article class="chart-panel sharp-panel full-width">
+                <div class="panel-heading-row">
+                    <h3>Solve Timeline</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="solveTimelineChart" height="200"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <section class="leaderboard-section sharp-panel monitor-table-panel">
+            <div class="panel-heading-row monitor-heading-row">
+                <h2>Leaderboard Table</h2>
+                <span class="panel-caption" id="leaderboardMeta">0 teams</span>
+            </div>
+            <div class="table-wrap monitor-table-wrap">
+                <table class="leaderboard-table monitor-table" id="leaderboardTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="rank">Rank</th>
+                            <th data-sort="name">Team Name</th>
+                            <th data-sort="score">Score</th>
+                            <th data-sort="solved">Challenges Solved</th>
+                            <th data-sort="lastSolveAt">Last Solve Time</th>
+                            <th data-sort="activity">Activity Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="freezeBadge" class="freeze-badge hidden"></div>
+        </section>
+
+        <section class="leaderboard-detail-panel sharp-panel hidden" id="teamDetailPanel">
+            <div class="panel-heading-row">
+                <h2 id="teamDetailTitle">Team Details</h2>
+                <button class="card-action-btn" type="button" id="closeDetailBtn">Close</button>
+            </div>
+            <div class="team-detail-grid">
+                <div class="team-detail-block">
+                    <div class="team-detail-label">Solved Challenges</div>
+                    <div id="teamSolvedList" class="team-detail-list"></div>
+                </div>
+                <div class="team-detail-block">
+                    <div class="team-detail-label">Score Progression</div>
+                    <canvas id="scoreProgressChart" height="180"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>JARVIS CTF Platform v1.0 | Leaderboard Monitor</p>
+        <div class="footer-accent"></div>
+    </footer>
+
+    <script src="leaderboard.js"></script>
+</body>
+</html>

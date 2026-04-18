@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS CTF - Player Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="particle-background"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">JARVIS</span>
+                <span class="logo-subtitle">Profile Console</span>
+            </div>
+            <div class="nav-actions static-actions">
+                <button class="nav-action-btn" onclick="window.location.href='index.html'">Challenges</button>
+                <button class="nav-action-btn" onclick="window.location.href='progress.html'">Progress</button>
+                <button class="nav-action-btn" onclick="window.location.href='leaderboard.html'">Leaderboard</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container profile-layout">
+        <section class="header-section progress-hero">
+            <div class="holographic-text">
+                <h1 class="title">PLAYER PROFILE</h1>
+                <p class="subtitle">Update credentials, team card details, settings, and avatars</p>
+            </div>
+        </section>
+
+        <section class="team-card-panel admin-panel">
+            <div class="team-card-header">
+                <div class="team-icon-wrap">
+                    <img id="teamIconPreview" class="team-icon-preview" alt="Team icon preview" src="profile-images/avatar-10.jpg">
+                </div>
+                <div class="team-card-title-wrap">
+                    <div class="team-card-eyebrow">Active Team</div>
+                    <h2 class="team-card-name" id="teamCardName">No Active Team</h2>
+                    <p class="team-card-meta" id="teamCardMeta">Assign an active team to view members and roles.</p>
+                    <div class="team-card-inline-meta">
+                        <span class="team-inline-chip"><i class="fas fa-trophy"></i> Rank <strong id="teamCardRank">-</strong></span>
+                        <span class="team-inline-chip"><i class="fas fa-bolt"></i> Score <strong id="teamCardScore">0</strong></span>
+                        <span class="team-inline-chip"><i class="fas fa-user-group"></i> Country <strong id="teamCardCountry">-</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-dashboard-grid">
+                <div class="team-dashboard-stats">
+                    <article class="team-stat-card">
+                        <div class="team-stat-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="team-stat-copy">
+                            <span class="team-stat-label">Score</span>
+                            <strong class="team-stat-number" id="teamCardScoreStat">0</strong>
+                        </div>
+                    </article>
+                    <article class="team-stat-card">
+                        <div class="team-stat-icon"><i class="fas fa-hashtag"></i></div>
+                        <div class="team-stat-copy">
+                            <span class="team-stat-label">Rank</span>
+                            <strong class="team-stat-number" id="teamCardRankStat">-</strong>
+                        </div>
+                    </article>
+                    <article class="team-stat-card">
+                        <div class="team-stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="team-stat-copy">
+                            <span class="team-stat-label">Members</span>
+                            <strong class="team-stat-number" id="teamCardMembersStat">0</strong>
+                        </div>
+                    </article>
+                    <article class="team-stat-card">
+                        <div class="team-stat-icon"><i class="fas fa-shield-halved"></i></div>
+                        <div class="team-stat-copy">
+                            <span class="team-stat-label">Solved</span>
+                            <strong class="team-stat-number" id="teamCardSolvedStat">0</strong>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="team-members-panel">
+                    <div class="team-section-title-row">
+                        <h3>Members</h3>
+                        <span class="team-section-caption" id="teamCardMembersCaption">Max 5 shown</span>
+                    </div>
+                    <div class="team-avatar-row" id="teamMemberAvatars"></div>
+                </div>
+
+                <div class="team-progress-panel">
+                    <div class="team-section-title-row">
+                        <h3>Progress</h3>
+                        <span class="team-section-caption" id="teamCardProgressLabel">Challenges Solved (0/0)</span>
+                    </div>
+                    <div class="team-progress-track">
+                        <div class="team-progress-fill" id="teamCardProgressFill"></div>
+                    </div>
+                </div>
+
+                <div class="team-actions-panel">
+                    <button class="team-action-btn primary" type="button" id="teamJoinBtn"><i class="fas fa-right-to-bracket"></i> Join Team</button>
+                    <button class="team-action-btn" type="button" id="teamLeaveBtn"><i class="fas fa-arrow-right-from-bracket"></i> Leave Team</button>
+                    <button class="team-action-btn" type="button" id="teamManageBtn"><i class="fas fa-compass"></i> Manage Team</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-grid">
+            <article class="admin-panel">
+                <h2 class="section-title">Credentials</h2>
+                <form id="profileForm" class="panel-form">
+                    <label>Username
+                        <input type="text" id="profileUsername" required>
+                    </label>
+                    <label>Email
+                        <input type="email" id="profileEmail" required>
+                    </label>
+                    <label>Phone Number
+                        <input type="tel" id="profilePhone" placeholder="+91 98765 43210">
+                    </label>
+                    <label>Alternate Email
+                        <input type="email" id="profileAlternateEmail" placeholder="alt-email@example.com">
+                    </label>
+                    <label>LinkedIn Profile URL
+                        <input type="url" id="socialLinkedIn" placeholder="https://www.linkedin.com/in/username">
+                    </label>
+                    <label>Medium Profile URL
+                        <input type="url" id="socialMedium" placeholder="https://medium.com/@username">
+                    </label>
+                    <label>Password
+                        <input type="password" id="profilePassword" placeholder="Enter new password">
+                    </label>
+                    <label>Active Team
+                        <select id="profileTeam"></select>
+                    </label>
+                    <button type="submit" class="submit-btn">Save Profile</button>
+                </form>
+                <div id="profileStatus" class="feedback"></div>
+            </article>
+
+            <article class="admin-panel">
+                <h2 class="section-title">Avatar</h2>
+                <div class="profile-preview-wrap">
+                    <img id="profilePreview" class="profile-preview" alt="Current profile avatar" src="profile-images/avatar-1.jpg">
+                </div>
+                <div class="avatar-gallery" id="avatarGallery"></div>
+                <label class="upload-label" for="avatarUpload">Upload Custom Profile Image</label>
+                <input type="file" id="avatarUpload" accept="image/*">
+                <div id="avatarStatus" class="feedback"></div>
+            </article>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>JARVIS CTF Platform v1.0 | Player Profile</p>
+        <div class="footer-accent"></div>
+    </footer>
+
+    <script src="profile.js"></script>
+</body>
+</html>

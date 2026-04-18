@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS CTF - Leaderboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="public-leaderboard-page">
+    <div class="particle-background"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-bolt"></i></span>
+                <span class="logo-text">JARVIS</span>
+                <span class="logo-subtitle">CTF Protocol</span>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-action-btn" onclick="window.location.href='index.html'">Home</button>
+                <button class="nav-action-btn" onclick="window.location.href='progress.html'">Progress</button>
+                <button class="profile-nav-btn" id="profileNavBtn" onclick="window.location.href='profile.html'" aria-label="Open profile page">
+                    <img id="profileNavAvatar" class="profile-nav-avatar" alt="Profile avatar" src="profile-images/avatar-1.jpg">
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container public-leaderboard-layout">
+        <!-- Header Section -->
+        <section class="public-lb-header">
+            <div>
+                <h1 class="lb-title">Live Leaderboard</h1>
+                <p class="lb-subtitle">Real-time team rankings and competition progress</p>
+            </div>
+            <div class="lb-controls">
+                <select id="categoryFilter" class="lb-select">
+                    <option value="all">All Categories</option>
+                    <option value="Web Exploitation">Web Exploitation</option>
+                    <option value="Cryptography">Cryptography</option>
+                    <option value="Binary">Binary</option>
+                    <option value="Forensics">Forensics</option>
+                    <option value="OSINT">OSINT</option>
+                </select>
+                <div class="lb-search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="search" id="teamSearch" placeholder="Search team name...">
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 3 Teams Podium -->
+        <section class="podium-section" id="podiumSection"></section>
+
+        <!-- Statistics Overview -->
+        <section class="public-stats-panel">
+            <div class="stat-card-public">
+                <div class="stat-value-public" id="totalTeams">0</div>
+                <div class="stat-label-public">Active Teams</div>
+            </div>
+            <div class="stat-card-public">
+                <div class="stat-value-public" id="avgScore">0</div>
+                <div class="stat-label-public">Avg Score</div>
+            </div>
+            <div class="stat-card-public">
+                <div class="stat-value-public" id="totalFlags">0</div>
+                <div class="stat-label-public">Flags Captured</div>
+            </div>
+            <div class="stat-card-public">
+                <div class="stat-value-public" id="topScore">0</div>
+                <div class="stat-label-public">Leader Score</div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="public-charts-section">
+            <article class="chart-card-public">
+                <h3>Score Progression</h3>
+                <div class="chart-container-public">
+                    <canvas id="scoreProgressChart"></canvas>
+                </div>
+            </article>
+            <article class="chart-card-public">
+                <h3>Flag Solve Trends</h3>
+                <div class="chart-container-public">
+                    <canvas id="flagTrendsChart"></canvas>
+                </div>
+            </article>
+            <article class="chart-card-public full-width-chart">
+                <h3>Category Difficulty Analysis</h3>
+                <div class="chart-container-public">
+                    <canvas id="categoryAnalysisChart"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <!-- Main Rankings Table -->
+        <section class="leaderboard-table-section">
+            <div class="lb-table-header">
+                <h2>Team Rankings</h2>
+                <span class="table-meta" id="tableMeta">Loading...</span>
+            </div>
+            <div class="lb-table-wrap">
+                <table class="lb-table" id="leaderboardTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="rank">Rank</th>
+                            <th data-sort="name">Team Name</th>
+                            <th data-sort="score">Score</th>
+                            <th data-sort="flags">Flags</th>
+                            <th data-sort="lastSolve">Last Solve</th>
+                            <th data-sort="accuracy">Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Team Detail Modal -->
+        <div class="detail-modal" id="teamDetailModal">
+            <div class="modal-overlay" id="modalOverlay"></div>
+            <div class="modal-content-public">
+                <button class="modal-close-btn" id="closeDetailBtn"><i class="fas fa-times"></i></button>
+                <div class="detail-header">
+                    <h2 id="detailTeamName">Team Name</h2>
+                    <div class="detail-rank" id="detailRank">#1</div>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-info">
+                        <div class="info-row">
+                            <span class="info-label">Total Score</span>
+                            <span class="info-value" id="detailScore">0</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Flags Captured</span>
+                            <span class="info-value" id="detailFlags">0</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">First Blood</span>
+                            <span class="info-value" id="detailFirstBlood">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Success Rate</span>
+                            <span class="info-value" id="detailRate">0%</span>
+                        </div>
+                    </div>
+                    <div class="detail-solved">
+                        <h4>Captured Flags</h4>
+                        <div id="detailSolvedList" class="solved-list"></div>
+                    </div>
+                </div>
+                <div class="detail-chart-wrapper">
+                    <h4>Score Timeline</h4>
+                    <canvas id="detailChartCanvas" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>JARVIS CTF Platform | Live Leaderboard</p>
+        <div class="footer-accent"></div>
+    </footer>
+
+    <script src="public-leaderboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS CTF Platform - Advanced Security Training</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="landing-page">
+    <div class="particle-background"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar landing-navbar">
+        <div class="nav-container">
+            <div class="nav-actions">
+                <button class="nav-action-btn" onclick="scrollToSection('features')">Features</button>
+                <button class="nav-action-btn" onclick="scrollToSection('categories')">Categories</button>
+                <button class="nav-action-btn" onclick="scrollToSection('about')">About</button>
+                <button class="nav-action-btn cta-btn" onclick="window.location.href='index.html'">Launch Platform</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="landing-hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="hero-accent">JARVIS</span><br>
+                    Cybersecurity Challenge Platform
+                </h1>
+                <p class="hero-subtitle">Master advanced security concepts through tactical flag capture and real-time competition</p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-number">10+</span>
+                        <span class="hero-stat-label">Challenges</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-number">5</span>
+                        <span class="hero-stat-label">Categories</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-number">Live</span>
+                        <span class="hero-stat-label">Leaderboard</span>
+                    </div>
+                </div>
+                <button class="hero-cta-btn" onclick="window.location.href='index.html'">
+                    <i class="fas fa-play"></i> Enter Challenges
+                </button>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-grid">
+                    <div class="grid-item grid-1"></div>
+                    <div class="grid-item grid-2"></div>
+                    <div class="grid-item grid-3"></div>
+                    <div class="grid-item grid-4"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Purpose Section -->
+    <section class="landing-section purpose-section" id="about">
+        <div class="section-container">
+            <h2 class="section-title">Platform Purpose</h2>
+            <div class="purpose-grid">
+                <article class="purpose-card">
+                    <div class="card-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Learn Cybersecurity</h3>
+                    <p>Progressive challenges designed to teach fundamental and advanced cybersecurity concepts through hands-on practice.</p>
+                </article>
+                <article class="purpose-card">
+                    <div class="card-icon">
+                        <i class="fas fa-crosshairs"></i>
+                    </div>
+                    <h3>Capture Flags</h3>
+                    <p>Solve puzzles, exploit vulnerabilities, and capture flags to earn points and climb the competitive leaderboard.</p>
+                </article>
+                <article class="purpose-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Track Progress</h3>
+                    <p>Real-time analytics and visual dashboards to monitor your performance, solve trends, and skill development.</p>
+                </article>
+                <article class="purpose-card">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Compete & Collaborate</h3>
+                    <p>Engage with a community of security enthusiasts, compete on leaderboards, and showcase your expertise.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="landing-section features-section" id="features">
+        <div class="section-container">
+            <h2 class="section-title">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-number">01</div>
+                    <h4>Real-Time Scoring</h4>
+                    <p>Live points calculation with instant feedback and penalty tracking for strategic gameplay.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-number">02</div>
+                    <h4>Dynamic Hints</h4>
+                    <p>Unlock hints by spending points to guide your solutions without giving away answers.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-number">03</div>
+                    <h4>Live Leaderboard</h4>
+                    <p>Real-time rankings with score progression graphs and team statistics.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-number">04</div>
+                    <h4>Category Challenges</h4>
+                    <p>Web Exploitation, Cryptography, Binary, Forensics, and OSINT across multiple difficulty levels.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-number">05</div>
+                    <h4>Progress Tracking</h4>
+                    <p>Detailed analytics showing category performance, solve rates, and skill progression.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-number">06</div>
+                    <h4>Difficulty Levels</h4>
+                    <p>Challenges from beginner to expert level, allowing players to progress at their own pace.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="landing-section categories-section" id="categories">
+        <div class="section-container">
+            <h2 class="section-title">Challenge Categories</h2>
+            <div class="categories-showcase">
+                <div class="category-showcase-item">
+                    <div class="category-icon web-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Web Exploitation</h3>
+                    <p>Master web vulnerabilities including SQL injection, XSS, CSRF, and server-side exploits.</p>
+                </div>
+                <div class="category-showcase-item">
+                    <div class="category-icon crypto-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>Cryptography</h3>
+                    <p>Break encryption, solve cipher challenges, and understand cryptographic principles.</p>
+                </div>
+                <div class="category-showcase-item">
+                    <div class="category-icon binary-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3>Binary Analysis</h3>
+                    <p>Reverse engineering, binary exploitation, and assembly language understanding.</p>
+                </div>
+                <div class="category-showcase-item">
+                    <div class="category-icon forensics-icon">
+                        <i class="fas fa-dna"></i>
+                    </div>
+                    <h3>Forensics</h3>
+                    <p>Digital forensics, memory analysis, and data recovery techniques.</p>
+                </div>
+                <div class="category-showcase-item">
+                    <div class="category-icon osint-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>OSINT</h3>
+                    <p>Open-source intelligence gathering and information reconnaissance skills.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="landing-section cta-section">
+        <div class="section-container">
+            <div class="cta-content">
+                <h2>Ready to Become a Security Expert?</h2>
+                <p>Join hundreds of participants in mastering cybersecurity through hands-on challenges and real-time competition.</p>
+                <div class="cta-buttons">
+                    <button class="cta-primary-btn" onclick="window.location.href='index.html'">
+                        <i class="fas fa-play-circle"></i> Start Competing
+                    </button>
+                    <button class="cta-secondary-btn" onclick="window.location.href='public-leaderboard.html'">
+                        <i class="fas fa-trophy"></i> View Leaderboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer landing-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>JARVIS CTF</h4>
+                <p>Advanced security training platform for cybersecurity professionals and enthusiasts.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Challenges</a></li>
+                    <li><a href="public-leaderboard.html">Leaderboard</a></li>
+                    <li><a href="progress.html">Progress</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 JARVIS CTF Platform. All rights reserved.</p>
+            <div class="footer-accent"></div>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Particle background animation
+        function initParticles() {
+            const container = document.querySelector('.particle-background');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.style.position = 'absolute';
+                p.style.width = (Math.random() * 4 + 1) + 'px';
+                p.style.height = p.style.width;
+                p.style.backgroundColor = 'rgba(0, 212, 255, 0.3)';
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.top = (Math.random() * 100) + '%';
+                p.style.animation = `float ${Math.random() * 12 + 6}s linear infinite`;
+                container.appendChild(p);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initParticles);
+    </script>
+</body>
+</html>

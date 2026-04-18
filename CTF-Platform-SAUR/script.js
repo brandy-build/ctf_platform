@@ -1,4 +1,8 @@
-// Challenge Data
+const ADMIN_STORAGE_KEY = 'ctfAdminData';
+const PLAYER_STATE_KEY = 'ctfPlayerState';
+const PROGRESS_STORAGE_KEY = 'ctfProgress';
+const PROFILE_STORAGE_KEY = 'ctfUserProfile';
+
 const challenges = {
     'Web Exploitation': {
         icon: 'fa-globe',
@@ -24,7 +28,7 @@ const challenges = {
             }
         ]
     },
-    'Cryptography': {
+    Cryptography: {
         icon: 'fa-lock',
         color: '#ff6b00',
         challenges: [
@@ -48,7 +52,7 @@ const challenges = {
             }
         ]
     },
-    'Binary': {
+    Binary: {
         icon: 'fa-cog',
         color: '#00ff41',
         challenges: [
@@ -72,7 +76,7 @@ const challenges = {
             }
         ]
     },
-    'Forensics': {
+    Forensics: {
         icon: 'fa-search',
         color: '#ff1744',
         challenges: [
@@ -96,7 +100,7 @@ const challenges = {
             }
         ]
     },
-    'OSINT': {
+    OSINT: {
         icon: 'fa-user-secret',
         color: '#ff1493',
         challenges: [
@@ -122,18 +126,28 @@ const challenges = {
     }
 };
 
-// State Management
 let completedChallenges = new Set();
 let totalScore = 0;
 let currentChallenge = null;
 let currentCategory = null;
+let adminData = null;
+let playerState = null;
+let userProfile = null;
 
-// Initialize the platform
 document.addEventListener('DOMContentLoaded', function() {
-    renderCategories();
+    adminData = loadAdminData();
+    playerState = loadPlayerState(adminData);
+    userProfile = loadUserProfile();
     loadFromLocalStorage();
+
+    ensureValidActiveTeam();
+    renderTeamSelector();
+    renderProfileNav();
+    renderCategories();
+    updateStats();
     updateClock();
     updateCountdownDial();
+
     setInterval(updateClock, 1000);
     setInterval(updateCountdownDial, 1000);
 
@@ -162,7 +176,228 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Live Clock
+window.addEventListener('storage', function(e) {
+    if (e.key === ADMIN_STORAGE_KEY || e.key === PLAYER_STATE_KEY || e.key === PROGRESS_STORAGE_KEY) {
+        adminData = loadAdminData();
+        playerState = loadPlayerState(adminData);
+        userProfile = loadUserProfile();
+        loadFromLocalStorage();
+        ensureValidActiveTeam();
+        renderTeamSelector();
+        renderProfileNav();
+        renderCategories();
+        updateStats();
+    }
+});
+
+function loadUserProfile() {
+    const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!raw) {
+        const initial = {
+            username: 'Player',
+            email: '',
+            avatar: 'profile-images/avatar-1.jpg'
+        };
+        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(initial));
+        return initial;
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!parsed.avatar || parsed.avatar.endsWith('.svg')) {
+        parsed.avatar = 'profile-images/avatar-1.jpg';
+        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
+}
+
+function renderProfileNav() {
+    const avatarEl = document.getElementById('profileNavAvatar');
+    if (!avatarEl) {
+        return;
+    }
+
+    avatarEl.src = userProfile.avatar || 'profile-images/avatar-1.jpg';
+    avatarEl.alt = `${userProfile.username || 'Player'} avatar`;
+}
+
+function buildDefaultAdminData() {
+    const challengeConfig = {};
+    Object.values(challenges).forEach(function(category) {
+        category.challenges.forEach(function(challenge) {
+            challengeConfig[challenge.id] = {
+                releaseLink: '',
+                hint: 'No hint configured by admin.',
+                hintCost: 50,
+                isReleased: true
+            };
+        });
+    });
+
+    return {
+        contest: {
+            startHour: 10,
+            durationHours: 8,
+            freezeMinutes: 30,
+            freezeLeaderboard: false
+        },
+        teams: [
+            {
+                id: `team_${Date.now()}`,
+                name: 'Red Foxes',
+                institution: 'Security Club',
+                country: 'IN',
+                members: 4,
+                status: 'active',
+                points: 0,
+                penalty: 0,
+                solved: 0,
+                lastSolveAt: null,
+                solvedChallenges: [],
+                hintsPurchased: 0
+            }
+        ],
+        users: [
+            {
+                id: `user_${Date.now()}`,
+                name: 'admin',
+                email: 'admin@jarvis.local',
+                role: 'admin',
+                teamId: null,
+                status: 'active'
+            }
+        ],
+        challengeConfig
+    };
+}
+
+function loadAdminData() {
+    const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
+    let data = raw ? JSON.parse(raw) : buildDefaultAdminData();
+
+    if (!data.challengeConfig) {
+        data.challengeConfig = {};
+    }
+
+    Object.values(challenges).forEach(function(category) {
+        category.challenges.forEach(function(challenge) {
+            if (!data.challengeConfig[challenge.id]) {
+                data.challengeConfig[challenge.id] = {
+                    releaseLink: '',
+                    hint: 'No hint configured by admin.',
+                    hintCost: 50,
+                    isReleased: true
+                };
+            }
+        });
+    });
+
+    if (Array.isArray(data.challenges)) {
+        data.challenges.forEach(function(challenge) {
+            if (!challenge || !challenge.id) {
+                return;
+            }
+
+            if (!data.challengeConfig[challenge.id]) {
+                data.challengeConfig[challenge.id] = {
+                    releaseLink: '',
+                    hint: 'No hint configured by admin.',
+                    hintCost: 50,
+                    isReleased: true
+                };
+            }
+
+            if (Array.isArray(challenge.resources)) {
+                data.challengeConfig[challenge.id].resources = challenge.resources.filter(function(resource) {
+                    return typeof resource === 'string' && resource.trim();
+                });
+            }
+        });
+    }
+
+    if (!Array.isArray(data.teams)) {
+        data.teams = [];
+    }
+
+    if (!Array.isArray(data.users)) {
+        data.users = [];
+    }
+
+    localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(data));
+    return data;
+}
+
+function loadPlayerState(currentAdminData) {
+    const raw = localStorage.getItem(PLAYER_STATE_KEY);
+    let state = raw ? JSON.parse(raw) : { activeTeamId: null, hintsUnlockedByTeam: {} };
+    if (!state.hintsUnlockedByTeam || typeof state.hintsUnlockedByTeam !== 'object') {
+        state.hintsUnlockedByTeam = {};
+    }
+
+    if (!state.activeTeamId && currentAdminData.teams.length > 0) {
+        state.activeTeamId = currentAdminData.teams[0].id;
+    }
+
+    localStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(state));
+    return state;
+}
+
+function saveAdminData() {
+    localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(adminData));
+}
+
+function savePlayerState() {
+    localStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(playerState));
+}
+
+function ensureValidActiveTeam() {
+    const teamExists = adminData.teams.some(function(team) {
+        return team.id === playerState.activeTeamId;
+    });
+
+    if (!teamExists) {
+        playerState.activeTeamId = adminData.teams.length ? adminData.teams[0].id : null;
+        savePlayerState();
+    }
+}
+
+function getActiveTeam() {
+    return adminData.teams.find(function(team) {
+        return team.id === playerState.activeTeamId;
+    }) || null;
+}
+
+function renderTeamSelector() {
+    const select = document.getElementById('teamSelect');
+    if (!select) {
+        return;
+    }
+
+    if (!adminData.teams.length) {
+        select.innerHTML = '<option value="">No Teams</option>';
+        select.disabled = true;
+        return;
+    }
+
+    select.disabled = false;
+    select.innerHTML = adminData.teams
+        .filter(function(team) {
+            return team.status !== 'blocked';
+        })
+        .map(function(team) {
+            return `<option value="${team.id}">${team.name}</option>`;
+        })
+        .join('');
+
+    select.value = playerState.activeTeamId;
+
+    select.onchange = function() {
+        playerState.activeTeamId = select.value;
+        savePlayerState();
+        updateStats();
+        renderCategories();
+    };
+}
+
 function updateClock() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -174,18 +409,21 @@ function updateClock() {
     }
 }
 
-// Right-side time dial (8-hour contest countdown)
 function updateCountdownDial() {
     const dial = document.getElementById('countdownDial');
     const valueEl = document.getElementById('countdownValue');
     const labelEl = document.getElementById('countdownLabel');
-    if (!dial || !valueEl || !labelEl) return;
+    if (!dial || !valueEl || !labelEl) {
+        return;
+    }
 
     const now = new Date();
     const start = new Date(now);
-    start.setHours(10, 0, 0, 0);
-    const contestDurationSeconds = 8 * 60 * 60;
+    const startHour = Number(adminData.contest.startHour) || 10;
+    const durationHours = Number(adminData.contest.durationHours) || 8;
+    start.setHours(startHour, 0, 0, 0);
 
+    const contestDurationSeconds = durationHours * 60 * 60;
     const elapsedSeconds = now < start ? 0 : Math.floor((now - start) / 1000);
     const remainingSeconds = Math.max(0, contestDurationSeconds - elapsedSeconds);
 
@@ -194,62 +432,84 @@ function updateCountdownDial() {
     const seconds = String(remainingSeconds % 60).padStart(2, '0');
 
     valueEl.textContent = `${hours}:${minutes}:${seconds}`;
-    labelEl.textContent = 'Time Remaining';
+    labelEl.textContent = remainingSeconds === 0 ? 'Contest Finished' : 'Time Remaining';
 }
 
-// Render Category Cards - Compact Tile Layout
 function renderCategories() {
     const container = document.getElementById('categoriesSections');
+    if (!container) {
+        return;
+    }
+
     container.innerHTML = '';
 
-    Object.entries(challenges).forEach(([categoryName, categoryData]) => {
-        // Create category section
+    Object.entries(challenges).forEach(function(entry) {
+        const categoryName = entry[0];
+        const categoryData = entry[1];
         const section = document.createElement('div');
         section.className = 'category-section';
-        
+
         const sectionHeader = document.createElement('div');
         sectionHeader.className = 'category-section-header';
         sectionHeader.innerHTML = `<h3 class="category-section-title">${categoryName}</h3>`;
         section.appendChild(sectionHeader);
-        
-        // Create challenges grid
+
         const grid = document.createElement('div');
         grid.className = 'challenges-grid';
-        
-        categoryData.challenges.forEach(challenge => {
-            const isSolved = completedChallenges.has(challenge.id);
-            const labelText = isSolved ? 'SOLVED' : challenge.title;
-            const labelClass = isSolved ? 'solved' : 'inactive';
+
+        categoryData.challenges.forEach(function(challenge) {
+            const config = adminData.challengeConfig[challenge.id] || {};
+            const released = config.isReleased !== false;
+            const activeTeam = getActiveTeam();
+            const teamSolved = activeTeam ? (activeTeam.solvedChallenges || []).includes(challenge.id) : false;
+
+            const isSolved = completedChallenges.has(challenge.id) || teamSolved;
+            const labelText = !released ? 'NOT RELEASED' : (isSolved ? 'SOLVED' : challenge.title);
+            const labelClass = !released ? 'inactive unreleased' : (isSolved ? 'solved' : 'inactive');
 
             const card = document.createElement('div');
             card.className = `challenge-card ${isSolved ? 'completed' : ''}`;
-            
-            card.innerHTML = `
-                <button class="challenge-label ${labelClass}" onclick="openChallenge('${challenge.id}', '${categoryName}')">${labelText}</button>
-            `;
-            
+            card.innerHTML = `<button class="challenge-label ${labelClass}" onclick="openChallenge('${challenge.id}', '${categoryName}')">${labelText}</button>`;
             grid.appendChild(card);
         });
-        
+
         section.appendChild(grid);
         container.appendChild(section);
     });
 }
 
-// Update Stats
 function updateStats() {
-    const flagCount = completedChallenges.size;
-    document.getElementById('flagCount').textContent = `${flagCount}/10`;
-    document.getElementById('scoreCount').textContent = totalScore;
+    const activeTeam = getActiveTeam();
+    const totalChallenges = Object.values(challenges).reduce(function(acc, category) {
+        return acc + category.challenges.length;
+    }, 0);
+
+    const solvedCount = activeTeam ? (activeTeam.solvedChallenges || []).length : completedChallenges.size;
+    const displayScore = activeTeam ? Math.max(0, (activeTeam.points || 0) - (activeTeam.penalty || 0)) : totalScore;
+
+    const flagCountEl = document.getElementById('flagCount');
+    const scoreEl = document.getElementById('scoreCount');
+    if (flagCountEl) {
+        flagCountEl.textContent = `${solvedCount}/${totalChallenges}`;
+    }
+    if (scoreEl) {
+        scoreEl.textContent = displayScore;
+    }
 }
 
-// Open challenge overlay window (modal)
 function openChallenge(challengeId, categoryName) {
-    const challenge = challenges[categoryName].challenges.find(c => c.id === challengeId);
-    if (!challenge) return;
+    const challenge = challenges[categoryName].challenges.find(function(item) {
+        return item.id === challengeId;
+    });
+    if (!challenge) {
+        return;
+    }
 
     currentChallenge = challenge;
     currentCategory = categoryName;
+
+    const config = adminData.challengeConfig[challenge.id] || {};
+    const released = config.isReleased !== false;
 
     document.getElementById('modalTitle').textContent = challenge.title;
     document.getElementById('difficultyBadge').textContent = challenge.difficulty.toUpperCase();
@@ -257,17 +517,127 @@ function openChallenge(challengeId, categoryName) {
     document.getElementById('modalDescription').textContent = challenge.description;
     document.getElementById('pointsValue').textContent = `${challenge.points} pts`;
 
+    const releaseLink = document.getElementById('challengeReleaseLink');
+    const metaPanel = document.getElementById('challengeMetaPanel');
+    if (config.releaseLink) {
+        releaseLink.href = config.releaseLink;
+        releaseLink.textContent = 'Open Challenge Link';
+    } else {
+        releaseLink.removeAttribute('href');
+        releaseLink.textContent = 'No release link configured';
+    }
+    metaPanel.classList.toggle('hidden', !released);
+
+    renderHintState();
+
     const resources = getChallengeResources(challenge.id);
     const resourcesList = document.getElementById('resourcesList');
-    resourcesList.innerHTML = resources.map(resource => `<li>${resource}</li>`).join('');
+    resourcesList.innerHTML = resources.map(function(resource) {
+        return `<li>${resource}</li>`;
+    }).join('');
 
     const feedback = document.getElementById('feedback');
-    feedback.textContent = '';
-    feedback.className = 'feedback';
-    document.getElementById('flagInput').value = '';
+    feedback.textContent = released ? '' : 'This challenge is not released yet by admin.';
+    feedback.className = released ? 'feedback' : 'feedback error';
+
+    const input = document.getElementById('flagInput');
+    input.value = '';
+    input.disabled = !released;
+
+    const submitBtn = document.querySelector('.flag-input-container .submit-btn');
+    if (submitBtn) {
+        submitBtn.disabled = !released;
+    }
 
     const modal = document.getElementById('challengeModal');
     modal.classList.add('active');
+}
+
+function renderHintState() {
+    const hintPanel = document.getElementById('hintPanel');
+    const hintText = document.getElementById('hintText');
+    const hintCostLabel = document.getElementById('hintCostLabel');
+    const buyBtn = document.getElementById('buyHintBtn');
+
+    if (!currentChallenge || !hintPanel || !hintText || !hintCostLabel || !buyBtn) {
+        return;
+    }
+
+    const config = adminData.challengeConfig[currentChallenge.id] || {};
+    const released = config.isReleased !== false;
+    const cost = Number(config.hintCost) || 0;
+    const team = getActiveTeam();
+
+    if (!team) {
+        hintPanel.classList.add('hidden');
+        return;
+    }
+
+    hintPanel.classList.remove('hidden');
+    hintCostLabel.textContent = `${cost} pts`;
+
+    const unlockedForTeam = playerState.hintsUnlockedByTeam[team.id] || [];
+    const unlocked = unlockedForTeam.includes(currentChallenge.id);
+
+    if (!released) {
+        hintText.textContent = 'Hint locked because challenge is not released.';
+        buyBtn.disabled = true;
+        buyBtn.textContent = 'Unavailable';
+        return;
+    }
+
+    if (unlocked) {
+        hintText.textContent = config.hint || 'No hint configured by admin.';
+        buyBtn.disabled = true;
+        buyBtn.textContent = 'Hint Unlocked';
+        return;
+    }
+
+    hintText.textContent = 'Hint is locked. Spend points to unlock this hint.';
+    buyBtn.disabled = false;
+    buyBtn.textContent = 'Unlock Hint';
+}
+
+function buyHint() {
+    if (!currentChallenge) {
+        return;
+    }
+
+    const team = getActiveTeam();
+    const feedback = document.getElementById('feedback');
+    if (!team) {
+        feedback.textContent = 'No active team selected.';
+        feedback.className = 'feedback error';
+        return;
+    }
+
+    const config = adminData.challengeConfig[currentChallenge.id] || {};
+    const cost = Number(config.hintCost) || 0;
+    const netScore = Math.max(0, (team.points || 0) - (team.penalty || 0));
+
+    if (netScore < cost) {
+        feedback.textContent = `Not enough points. Required: ${cost} pts.`;
+        feedback.className = 'feedback error';
+        return;
+    }
+
+    const unlocked = playerState.hintsUnlockedByTeam[team.id] || [];
+    if (unlocked.includes(currentChallenge.id)) {
+        renderHintState();
+        return;
+    }
+
+    team.penalty = (team.penalty || 0) + cost;
+    team.hintsPurchased = (team.hintsPurchased || 0) + 1;
+    unlocked.push(currentChallenge.id);
+    playerState.hintsUnlockedByTeam[team.id] = unlocked;
+
+    saveAdminData();
+    savePlayerState();
+    updateStats();
+    renderHintState();
+    feedback.textContent = `Hint unlocked for ${cost} points.`;
+    feedback.className = 'feedback success';
 }
 
 function closeModal() {
@@ -277,13 +647,21 @@ function closeModal() {
     currentCategory = null;
 }
 
-// Submit Flag
 function submitFlag() {
-    if (!currentChallenge || !currentCategory) return;
+    if (!currentChallenge || !currentCategory) {
+        return;
+    }
 
     const input = document.getElementById('flagInput');
     const feedback = document.getElementById('feedback');
     const userInput = input.value.trim();
+    const config = adminData.challengeConfig[currentChallenge.id] || {};
+
+    if (config.isReleased === false) {
+        feedback.textContent = 'This challenge is not released yet by admin.';
+        feedback.className = 'feedback error';
+        return;
+    }
 
     if (!userInput) {
         feedback.textContent = 'Please enter a flag';
@@ -291,54 +669,112 @@ function submitFlag() {
         return;
     }
 
-    // Case-insensitive comparison and flexible matching
     const normalizedInput = userInput.toLowerCase();
     const normalizedFlag = currentChallenge.flag.toLowerCase();
 
-    if (normalizedInput === normalizedFlag) {
-        // Correct flag
-        if (!completedChallenges.has(currentChallenge.id)) {
-            completedChallenges.add(currentChallenge.id);
-            totalScore += currentChallenge.points;
-            
-            saveToLocalStorage();
-            updateStats();
-            renderCategories();
-
-            feedback.textContent = `Correct! You earned ${currentChallenge.points} points!`;
-            feedback.className = 'feedback success';
-        } else {
-            feedback.textContent = 'You already captured this flag!';
-            feedback.className = 'feedback success';
-        }
-    } else {
-        // Incorrect flag
+    if (normalizedInput !== normalizedFlag) {
         feedback.textContent = 'Incorrect flag. Try again!';
         feedback.className = 'feedback error';
+        return;
     }
+
+    const team = getActiveTeam();
+    if (!team) {
+        feedback.textContent = 'No active team selected. Ask admin to create a team.';
+        feedback.className = 'feedback error';
+        return;
+    }
+
+    if (!completedChallenges.has(currentChallenge.id)) {
+        completedChallenges.add(currentChallenge.id);
+        totalScore += currentChallenge.points;
+    }
+
+    if (!Array.isArray(team.solvedChallenges)) {
+        team.solvedChallenges = [];
+    }
+
+    if (!team.solvedChallenges.includes(currentChallenge.id)) {
+        team.solvedChallenges.push(currentChallenge.id);
+        team.solved = team.solvedChallenges.length;
+        team.points = (team.points || 0) + currentChallenge.points;
+        team.lastSolveAt = new Date().toISOString();
+            if (!Array.isArray(team.solveHistory)) {
+                team.solveHistory = [];
+            }
+            team.solveHistory.push({
+                challengeId: currentChallenge.id,
+                challengeName: currentChallenge.title,
+                at: team.lastSolveAt,
+                hintsUsed: (playerState.hintsUnlockedByTeam[team.id] || []).includes(currentChallenge.id) ? 1 : 0
+            });
+            team.solveHistory = team.solveHistory.slice(-50);
+        feedback.textContent = `Correct! Team ${team.name} earned ${currentChallenge.points} points.`;
+
+        if (!adminData.challengeStats) {
+            adminData.challengeStats = {};
+        }
+
+        const challengeStats = adminData.challengeStats[currentChallenge.id] || {
+            solveCount: 0,
+            firstBloodUser: '',
+            firstBloodAt: '',
+            firstBloodTeam: '',
+            recentSolves: []
+        };
+
+        challengeStats.solveCount = (challengeStats.solveCount || 0) + 1;
+        challengeStats.recentSolves = Array.isArray(challengeStats.recentSolves) ? challengeStats.recentSolves : [];
+        challengeStats.recentSolves.unshift({
+            user: userProfile.username || team.name || 'Unknown',
+            team: team.name || 'Unknown',
+            at: team.lastSolveAt
+        });
+        challengeStats.recentSolves = challengeStats.recentSolves.slice(0, 5);
+
+        if (!challengeStats.firstBloodUser) {
+            challengeStats.firstBloodUser = userProfile.username || team.name || 'Unknown';
+            challengeStats.firstBloodAt = team.lastSolveAt;
+            challengeStats.firstBloodTeam = team.name || 'Unknown';
+        }
+
+        adminData.challengeStats[currentChallenge.id] = challengeStats;
+    } else {
+        feedback.textContent = `Correct, but ${team.name} already solved this challenge.`;
+    }
+
+    feedback.className = 'feedback success';
+    saveAdminData();
+    saveToLocalStorage();
+    updateStats();
+    renderCategories();
 }
 
-// LocalStorage Management
 function saveToLocalStorage() {
     const data = {
         completedChallenges: Array.from(completedChallenges),
-        totalScore: totalScore
+        totalScore
     };
-    localStorage.setItem('ctfProgress', JSON.stringify(data));
+    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(data));
 }
 
 function loadFromLocalStorage() {
-    const data = localStorage.getItem('ctfProgress');
-    if (data) {
-        const parsed = JSON.parse(data);
-        completedChallenges = new Set(parsed.completedChallenges);
-        totalScore = parsed.totalScore;
-        updateStats();
-        renderCategories();
+    const data = localStorage.getItem(PROGRESS_STORAGE_KEY);
+    if (!data) {
+        return;
     }
+
+    const parsed = JSON.parse(data);
+    completedChallenges = new Set(parsed.completedChallenges || []);
+    totalScore = parsed.totalScore || 0;
 }
 
 function getChallengeResources(challengeId) {
+    const config = adminData.challengeConfig[challengeId] || {};
+    if (Array.isArray(config.resources) && config.resources.length > 0) {
+        return config.resources;
+    }
+
     const resources = {
         web_easy: ['OWASP SQL Injection Cheat Sheet', 'Browser DevTools Network Tab'],
         web_hard: ['OWASP XSS Prevention Cheat Sheet', 'CSRF attack/defense guides'],
@@ -351,28 +787,30 @@ function getChallengeResources(challengeId) {
         osint_easy: ['whois', 'nslookup/dig'],
         osint_hard: ['GitHub dorks', 'theHarvester']
     };
-
     return resources[challengeId] || ['No resources listed'];
 }
 
-// Particle animation for background
 function createParticles() {
     const container = document.querySelector('.particle-background');
-    for (let i = 0; i < 20; i++) {
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = '';
+    for (let i = 0; i < 20; i += 1) {
         const particle = document.createElement('div');
         particle.style.position = 'absolute';
-        particle.style.width = Math.random() * 3 + 1 + 'px';
+        particle.style.width = `${Math.random() * 3 + 1}px`;
         particle.style.height = particle.style.width;
         particle.style.backgroundColor = 'rgba(0, 212, 255, 0.5)';
         particle.style.borderRadius = '50%';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
         particle.style.animation = `float ${Math.random() * 10 + 5}s infinite`;
         container.appendChild(particle);
     }
 }
 
-// Animation keyframes for particles
 const style = document.createElement('style');
 style.textContent = `
     @keyframes float {
@@ -388,5 +826,4 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Create particles on load
 window.addEventListener('load', createParticles);

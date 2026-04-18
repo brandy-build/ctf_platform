@@ -22,7 +22,6 @@
                 <span class="logo-subtitle">CTF Protocol</span>
             </div>
             <div class="nav-stats">
-                <button class="progress-page-btn" onclick="window.location.href='progress.html'">Challenge Progress</button>
                 <div class="stat-box">
                     <span class="stat-label">Flags Captured:</span>
                     <span class="stat-value" id="flagCount">0/10</span>
@@ -31,6 +30,13 @@
                     <span class="stat-label">Score:</span>
                     <span class="stat-value" id="scoreCount">0</span>
                 </div>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-action-btn" onclick="window.location.href='progress.html'">Challenge Progress</button>
+                <button class="nav-action-btn" onclick="window.location.href='public-leaderboard.html'">Leaderboard</button>
+                <button class="profile-nav-btn" id="profileNavBtn" onclick="window.location.href='profile.html'" aria-label="Open profile page">
+                    <img id="profileNavAvatar" class="profile-nav-avatar" alt="Profile avatar" src="profile-images/avatar-1.jpg">
+                </button>
             </div>
         </div>
     </nav>
@@ -77,6 +83,20 @@
                 </div>
                 <div class="modal-body">
                     <div class="challenge-description" id="modalDescription"></div>
+                    <div class="challenge-meta-panel" id="challengeMetaPanel">
+                        <div class="meta-row">
+                            <span class="meta-label">Release Link</span>
+                            <a href="#" id="challengeReleaseLink" class="release-link" target="_blank" rel="noopener noreferrer">Open Challenge Link</a>
+                        </div>
+                    </div>
+                    <div class="hint-panel" id="hintPanel">
+                        <div class="hint-header">
+                            <div class="resources-title">Hint Access</div>
+                            <span id="hintCostLabel" class="hint-cost"></span>
+                        </div>
+                        <div id="hintText" class="hint-text">Hint is locked. Spend points to unlock this hint.</div>
+                        <button class="submit-btn hint-buy-btn" id="buyHintBtn" onclick="buyHint()">Unlock Hint</button>
+                    </div>
                     <div class="challenge-resources">
                         <div class="resources-title">Resources</div>
                         <ul id="resourcesList"></ul>
